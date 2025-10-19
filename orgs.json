@@ -1,0 +1,14 @@
+{
+    "default": {
+        "url": "ldap.eco.dvo.ru",
+        "base_dn": "ou=users,dc=eco,dc=dvo,dc=ru"
+    },
+    "vvsu": {
+        "url": "ldap.eco.dvo.ru",
+        "base_dn": "ou=users,dc=eco,dc=dvo,dc=ru"
+    },
+    "iapu_dvo_ran": {
+        "url": "ldap.eco.dvo.ru",
+        "base_dn": "ou=users,dc=eco,dc=dvo,dc=ru"
+    }
+}
