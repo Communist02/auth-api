@@ -1,3 +1,4 @@
 fastapi[standard]
 pyjwt
 cryptography
+ldap3

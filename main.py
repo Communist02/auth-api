@@ -26,7 +26,7 @@ app.add_middleware(
 
 LDAP_SERVERS = json.loads(open('orgs.json', 'r').read())
 JWT_ALGORITHM = "ES256"
-JWT_EXPIRE_MINUTES = 60
+JWT_EXPIRE_DAYS = 30
 ISSUER = 'http://localhost:8080'
 JWT_KEY_ID = "minio-key-id"
 
@@ -61,11 +61,10 @@ except FileNotFoundError:
 
 
 def create_jwt_token(username: str, org: str) -> dict:
-    expire = datetime.now(UTC) + timedelta(minutes=JWT_EXPIRE_MINUTES)
+    expire = datetime.now(UTC) + timedelta(days=JWT_EXPIRE_DAYS)
     payload = {
-        "sub": username,
-        "org": org,
-        "policy": "readwrite",
+        "sub": f'{username}/{org}' if org != 'default' else username,
+        "policy": [f'{username}/{org}' if org != 'default' else username, 'all/system'],
         "exp": int(expire.timestamp()),
         "iat": int(datetime.now(UTC).timestamp()),
         "iss": ISSUER,
