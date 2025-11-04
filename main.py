@@ -25,10 +25,10 @@ app.add_middleware(
 )
 
 LDAP_SERVERS = json.loads(open('orgs.json', 'r').read())
-JWT_ALGORITHM = "ES256"
+JWT_ALGORITHM = 'ES256'
 JWT_EXPIRE_DAYS = 30
 ISSUER = 'http://localhost:8080'
-JWT_KEY_ID = "minio-key-id"
+JWT_KEY_ID = 'minio-key-id'
 
 
 try:
@@ -80,14 +80,15 @@ class LoginRequest(BaseModel):
 
 
 @app.post("/login")
-def login(credentials: Annotated[HTTPBasicCredentials, Depends(security)], org: str = None) -> str:
+async def login(credentials: Annotated[HTTPBasicCredentials, Depends(security)], org: str = None) -> str:
     if not org:
         org = 'default'
     ldap = LDAP_SERVERS[org]
     client_ldap = LDAPManager(server_url=ldap['url'], base_dn=ldap['base_dn'])
-    user_id_ldap = client_ldap.auth(credentials.username, credentials.password)
+    user_id_ldap = await client_ldap.auth(credentials.username, credentials.password)
 
     if user_id_ldap is None:
+    # if False:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     token = create_jwt_token(credentials.username, org)
     return token
@@ -117,7 +118,7 @@ async def jwks():
 
 
 @app.get("/.well-known/openid-configuration")
-def openid_config() -> dict[str, str | list]:
+async def openid_config() -> dict[str, str | list]:
     return {
         "issuer": ISSUER,
         "authorization_endpoint": f"{ISSUER}/authorize",

@@ -1,3 +1,4 @@
+import asyncio
 import os
 from ldap3 import ALL, Server, Connection, MODIFY_REPLACE, core
 print(os.getenv('LDAP_PASS'))
@@ -14,14 +15,14 @@ class LDAPManager:
         server = Server(self.server_url, 389, get_info=ALL)
         return Connection(server, self.admin_dn, self.admin_password, auto_bind=True)
 
-    def auth(self, username: str, password: str) -> int | None:
+    async def auth(self, username: str, password: str) -> int | None:
         try:
             server = Server(self.server_url, get_info=ALL)
             user_dn = f'uid={username},{self.users_base_dn}'
 
             conn = Connection(server, user_dn, password, auto_bind=True)
-
-            conn.search(
+            await asyncio.to_thread(
+                conn.search,
                 search_base=self.users_base_dn,
                 search_filter=f'(uid={username})',
                 attributes=['uidNumber']
