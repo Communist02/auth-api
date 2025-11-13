@@ -27,7 +27,7 @@ app.add_middleware(
 LDAP_SERVERS = json.loads(open('orgs.json', 'r').read())
 JWT_ALGORITHM = 'ES256'
 JWT_EXPIRE_DAYS = 30
-ISSUER = 'http://localhost:8080'
+ISSUER = 'http://minio-s3-1.eco.dvo.ru:8080'
 JWT_KEY_ID = 'minio-key-id'
 
 
