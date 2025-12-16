@@ -9,10 +9,9 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import jwt
 from cryptography.hazmat.primitives.asymmetric import ec
 import base64
-
 from pydantic import BaseModel
-
 from ldap import LDAPManager
+import config
 
 app = FastAPI()
 security = HTTPBasic()
@@ -27,7 +26,7 @@ app.add_middleware(
 LDAP_SERVERS = json.loads(open('orgs.json', 'r').read())
 JWT_ALGORITHM = 'ES256'
 JWT_EXPIRE_DAYS = 30
-ISSUER = 'http://minio-s3-1.eco.dvo.ru:8080'
+ISSUER = config.issuer
 JWT_KEY_ID = 'minio-key-id'
 
 
@@ -88,7 +87,6 @@ async def login(credentials: Annotated[HTTPBasicCredentials, Depends(security)],
     user_id_ldap = await client_ldap.auth(credentials.username, credentials.password)
 
     if user_id_ldap is None:
-    # if False:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     token = create_jwt_token(credentials.username, org)
     return token
@@ -101,7 +99,7 @@ async def jwks():
     x_bytes = public_numbers.x.to_bytes(32, 'big')
     y_bytes = public_numbers.y.to_bytes(32, 'big')
 
-    def base64url_encode(data):
+    def base64url_encode(data) -> str:
         return base64.urlsafe_b64encode(data).rstrip(b'=').decode('ascii')
 
     return {

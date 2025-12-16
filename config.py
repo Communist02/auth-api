@@ -1,0 +1,1 @@
+issuer = "http://minio-s3-1.eco.dvo.ru:8080"
